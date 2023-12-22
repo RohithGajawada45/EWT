@@ -6,28 +6,47 @@
     <title>Document</title>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+<style>
+    input{
+        width: 25%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        margin-bottom: 20px;
+    }
+    button{
+        margin-top: 20px;
+        margin-right: 20px;
+        align-items: center;
+        padding: 10px;
+    }
+</style>
 </head>
 <body>
-    <h1>Hello Students</h1>
-    <div>
-        <input type="text" name="Name" id="n" placeholder="student name">
-        <input type="text" name="RollNo" id="r" placeholder="Roll Number">
-        <input type="text" name="Branch" id="b" placeholder="Braanch">
+    <h1 align="center">Hello Students</h1>
+    <div align="center">
+        <input type="text" name="Name" id="n" placeholder="student name" class="input-group mb-3"><br>
+        <input type="text" name="RollNo" id="r" placeholder="Roll Number"class="input-group mb-3"><br>
+        <input type="text" name="Branch" id="b" placeholder="Braanch"class="input-group mb-3"><br>
         <button id="in" type="button" class="btn btn-success" >INSERT</button>
         <button id="up" type="button" class="btn btn-primary">UPDATE</button>
         <button id="de"type="button" class="btn btn-warning">DELETE</button>
         <button id="di" type="button" class="btn btn-info">DISPLAY</button>
+        <h2 id="h22"></h2>
     </div>
 
     <script type="module">
         // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import {getDatabase,set,ref,update,remove,get,child} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
         // TODO: Add SDKs for Firebase products that you want to use
         // https://firebase.google.com/docs/web/setup#available-libraries
       
         // Your web app's Firebase configuration
         const firebaseConfig = {
           apiKey: "AIzaSyB_jb8eLzNBZcV-xo2kQ_OxUpoU1FchnJU",
+          databaseUrl: "ewtt-72ab4-default-rtdb.firebaseio.com",
           authDomain: "ewtt-72ab4.firebaseapp.com",
           projectId: "ewtt-72ab4",
           storageBucket: "ewtt-72ab4.appspot.com",
@@ -38,7 +57,62 @@
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
 
+        const db = getDatabase();
+        
 
+        document.getElementById("in").addEventListener("click", InsertData);
+        document.getElementById("up").addEventListener("click", updateData);
+        document.getElementById("de").addEventListener("click", deleteData);
+        document.getElementById("di").addEventListener("click", displayData);
+
+        function InsertData(){
+            var name = document.getElementById("n").value;
+            var roll = document.getElementById("r").value;
+            var branch = document.getElementById('b').value;
+
+            var ob = {
+                name : name,
+                roll : roll,
+                branch : branch
+            }
+
+            set(ref(db, 'student/'+ roll), ob);
+            alert("done");
+        }
+
+        function updateData(){
+            var name = document.getElementById("n").value;
+            var roll = document.getElementById("r").value;
+            var branch = document.getElementById('b').value;
+            var ob = {
+                name : name,
+                roll : roll,
+                branch : branch
+            }
+
+            update(ref(db, 'student/'+roll), ob);
+            alert("updated");
+        }
+
+        function deleteData(){
+            var roll = document.getElementById("r").value;
+           
+            remove(ref(db,'student/'+roll));
+            alert("deleted");
+        }
+
+        function displayData(){
+            var r=document.getElementById("r").value;
+            get(child(ref(db),"student/"+r)).then(function(data){
+              if(data.exists()){
+                var ob=data.val();
+                document.getElementById("h22").innerHTML=(data.val().name+" "+data.val().branch+" "+data.val().roll);
+              }
+              else{
+                console.log("No Data available");
+              }
+            });
+          }
       </script>
 </body>
 </html>
